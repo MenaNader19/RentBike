@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeloStay — Hotel Bicycle Rentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --burnt: #CC5500;
+    --burnt-dark: #A84400;
+    --burnt-light: #E8762A;
+    --burnt-pale: #FFF0E6;
+    --cream: #FDFAF6;
+    --charcoal: #1C1A18;
+    --mid: #6B6460;
+    --light: #E8E0D8;
+    --white: #FFFFFF;
+    --shadow: 0 4px 24px rgba(204,85,0,0.12);
+    --shadow-lg: 0 12px 48px rgba(28,26,24,0.14);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 18px 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(253,250,246,0.85);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(204,85,0,0.1);
+    transition: background 0.3s;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--burnt);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--charcoal); font-style: italic; }
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+    font-size: 0.88rem; font-weight: 500; letter-spacing: 0.02em;
+  }
+  .nav-links a { text-decoration: none; color: var(--mid); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--burnt); }
+  .nav-cta {
+    background: var(--burnt); color: var(--white);
+    border: none; border-radius: 50px;
+    padding: 10px 22px; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s, transform 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-cta:hover { background: var(--burnt-dark); transform: translateY(-1px); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { width: 24px; height: 2px; background: var(--charcoal); border-radius: 2px; transition: 0.3s; }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative; height: 100vh; min-height: 620px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a0d00 0%, #3d1a00 40%, #1c0e00 100%);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1558981285-6f0c5d9a33ca?w=1800&auto=format&fit=crop&q=80');
+    background-size: cover; background-position: center;
+    opacity: 0.45;
+    transform: scale(1.05);
+    animation: heroZoom 12s ease-in-out infinite alternate;
+  }
+  @keyframes heroZoom { from { transform: scale(1.05); } to { transform: scale(1.12); } }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(204,85,0,0.55) 0%, transparent 60%),
+                linear-gradient(to top, rgba(28,26,24,0.7) 0%, transparent 55%);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 680px; padding: 0 5%;
+    text-align: left;
+    animation: fadeUp 1s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(204,85,0,0.25); border: 1px solid rgba(204,85,0,0.5);
+    color: #ffcca6; border-radius: 50px;
+    padding: 6px 14px; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 24px;
+    animation: fadeUp 1s 0.15s ease both;
+  }
+  .hero-badge::before { content: '●'; font-size: 0.5rem; color: var(--burnt-light); }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: 1.1; color: var(--white);
+    margin-bottom: 20px;
+    animation: fadeUp 1s 0.25s ease both;
+  }
+  h1 em { color: #ffb380; font-style: italic; }
+  .hero-sub {
+    color: rgba(255,255,255,0.75); font-size: 1.05rem; line-height: 1.7;
+    max-width: 480px; margin-bottom: 36px;
+    animation: fadeUp 1s 0.35s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 14px; align-items: center;
+    animation: fadeUp 1s 0.45s ease both;
+  }
+  .btn-primary {
+    background: var(--burnt); color: var(--white);
+    border: none; border-radius: 50px;
+    padding: 15px 34px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 6px 24px rgba(204,85,0,0.45);
+  }
+  .btn-primary:hover { background: var(--burnt-light); transform: translateY(-2px); box-shadow: 0 10px 32px rgba(204,85,0,0.55); }
+  .btn-ghost {
+    color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 50px;
+    padding: 14px 26px; font-size: 0.95rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+    backdrop-filter: blur(6px);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.18); }
+  .hero-stats {
+    position: absolute; bottom: 40px; right: 5%;
+    display: flex; gap: 32px; z-index: 2;
+    animation: fadeUp 1s 0.55s ease both;
+  }
+  .stat { text-align: right; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--white); line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); letter-spacing: 0.05em; text-transform: uppercase; }
+
+  /* ─── BOOKING FORM ─── */
+  .booking-section {
+    padding: 0 5%; margin-top: -60px; position: relative; z-index: 10;
+  }
+  .booking-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 36px 40px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 20px; align-items: end;
+    max-width: 1100px; margin: 0 auto;
+    border: 1px solid var(--light);
+  }
+  .form-group label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--mid); margin-bottom: 8px;
+  }
+  .form-group input, .form-group select {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--light); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+    color: var(--charcoal); background: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--burnt); box-shadow: 0 0 0 3px rgba(204,85,0,0.1);
+  }
+  .form-group select { cursor: pointer; }
+  .btn-book {
+    background: var(--burnt); color: var(--white);
+    border: none; border-radius: var(--radius-sm);
+    padding: 13px 32px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 4px 16px rgba(204,85,0,0.35);
+  }
+  .btn-book:hover { background: var(--burnt-dark); transform: translateY(-1px); }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 96px 5%; }
+  .section-tag {
+    display: inline-block; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--burnt); margin-bottom: 12px;
+  }
+  .section-tag::before { content: '— '; }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1.15; color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    color: var(--mid); font-size: 1rem; line-height: 1.7;
+    max-width: 520px; margin-bottom: 52px;
+  }
+  .section-header { margin-bottom: 52px; }
+
+  /* ─── BIKES ─── */
+  .bikes-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .bike-card {
+    background: var(--white); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid var(--light);
+  }
+  .bike-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+  .bike-img {
+    width: 100%; height: 220px;
+    background-size: cover; background-position: center;
+    position: relative; overflow: hidden;
+  }
+  .bike-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(28,26,24,0.4) 0%, transparent 60%);
+  }
+  .bike-badge {
+    position: absolute; top: 14px; left: 14px; z-index: 1;
+    background: var(--burnt); color: var(--white);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 50px;
+  }
+  .bike-body { padding: 24px; }
+  .bike-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem; color: var(--charcoal); margin-bottom: 8px;
+  }
+  .bike-desc { font-size: 0.88rem; color: var(--mid); line-height: 1.6; margin-bottom: 18px; }
+  .bike-meta { display: flex; justify-content: space-between; align-items: center; }
+  .bike-price { font-size: 1.1rem; font-weight: 700; color: var(--burnt); }
+  .bike-price span { font-size: 0.8rem; font-weight: 400; color: var(--mid); }
+  .bike-features { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .feat-tag {
+    background: var(--burnt-pale); color: var(--burnt);
+    font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 50px;
+  }
+  .btn-rent {
+    width: 100%; margin-top: 16px; padding: 11px;
+    background: transparent; border: 1.5px solid var(--burnt);
+    color: var(--burnt); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-rent:hover { background: var(--burnt); color: var(--white); }
+
+  /* ─── REVIEWS ─── */
+  .reviews-section { background: var(--charcoal); }
+  .reviews-section h2, .reviews-section .section-sub { color: var(--white); }
+  .reviews-section .section-sub { color: rgba(255,255,255,0.6); }
+  .reviews-section .section-tag { color: #ffb380; }
+  .reviews-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .review-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius); padding: 28px;
+    transition: background 0.3s;
+  }
+  .review-card:hover { background: rgba(255,255,255,0.1); }
+  .stars { color: #FFA94D; font-size: 1rem; letter-spacing: 2px; margin-bottom: 14px; }
+  .review-text {
+    font-size: 0.93rem; color: rgba(255,255,255,0.8);
+    line-height: 1.7; font-style: italic;
+    margin-bottom: 20px;
+  }
+  .reviewer { display: flex; align-items: center; gap: 12px; }
+  .reviewer-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    border: 2px solid rgba(204,85,0,0.5);
+    flex-shrink: 0;
+  }
+  .reviewer-name { font-weight: 600; color: var(--white); font-size: 0.9rem; }
+  .reviewer-hotel { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
+
+  /* ─── BRANCHES ─── */
+  .branches-section { background: var(--burnt-pale); }
+  .branches-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .branch-card {
+    background: var(--white); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .branch-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+  .branch-img {
+    width: 100%; height: 180px;
+    background-size: cover; background-position: center;
+  }
+  .branch-body { padding: 20px; }
+  .branch-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; color: var(--charcoal); margin-bottom: 6px;
+  }
+  .branch-addr { font-size: 0.83rem; color: var(--mid); margin-bottom: 12px; line-height: 1.5; }
+  .branch-info { display: flex; gap: 16px; font-size: 0.8rem; color: var(--mid); }
+  .branch-info span { display: flex; align-items: center; gap: 4px; }
+  .branch-info svg { width: 14px; height: 14px; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--charcoal); color: rgba(255,255,255,0.65);
+    padding: 72px 5% 32px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 48px;
+    max-width: 1100px; margin: 0 auto 60px;
+  }
+  .footer-brand .logo { font-size: 1.6rem; }
+  .footer-tagline { font-size: 0.88rem; line-height: 1.7; margin-top: 12px; color: rgba(255,255,255,0.5); }
+  .footer-social { display: flex; gap: 10px; margin-top: 24px; }
+  .social-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.2s; font-size: 0.9rem;
+    color: rgba(255,255,255,0.65); text-decoration: none;
+  }
+  .social-btn:hover { background: var(--burnt); color: var(--white); }
+  .footer-col h4 {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--white);
+    margin-bottom: 18px;
+  }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 10px; }
+  .footer-links a {
+    text-decoration: none; font-size: 0.88rem;
+    color: rgba(255,255,255,0.5); transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--burnt-light); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 24px; display: flex; justify-content: space-between;
+    align-items: center; font-size: 0.8rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .footer-bottom-links { display: flex; gap: 20px; }
+  .footer-bottom-links a {
+    text-decoration: none; color: rgba(255,255,255,0.4); transition: color 0.2s;
+  }
+  .footer-bottom-links a:hover { color: var(--burnt-light); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .nav-links, .nav-cta { display: none; }
+    .hamburger { display: flex; }
+    .booking-card { grid-template-columns: 1fr 1fr; }
+    .bikes-grid, .reviews-grid, .branches-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hero-stats { display: none; }
+  }
+  @media (max-width: 600px) {
+    .booking-card { grid-template-columns: 1fr; padding: 24px; }
+    .bikes-grid, .reviews-grid, .branches-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    h1 { font-size: 2.4rem; }
+    .hero-actions { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Velo<span>Stay</span></div>
+  <ul class="nav-links">
+    <li><a href="#bikes">Fleet</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#branches">Locations</a></li>
+    <li><a href="#footer">Contact</a></li>
+  </ul>
+  <button class="nav-cta">Rent a Bike</button>
+  <div class="hamburger" onclick="this.classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Premium Hotel Cycling Experience</div>
+    <h1>Explore the City on <em>Two Wheels</em></h1>
+    <p class="hero-sub">Seamlessly rent a bicycle from any of our luxury hotel locations. Discover the city at your own pace, your way.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.querySelector('.booking-section').scrollIntoView({behavior:'smooth'})">Rent Now</button>
+      <button class="btn-ghost" onclick="document.querySelector('#bikes').scrollIntoView({behavior:'smooth'})">View Fleet →</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">2,400+</div>
+      <div class="stat-label">Happy Riders</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Hotel Branches</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4.9★</div>
+      <div class="stat-label">Avg Rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING FORM -->
+<div class="booking-section">
+  <div class="booking-card">
+    <div class="form-group">
+      <label>Pickup Date</label>
+      <input type="date" id="pickup-date">
+    </div>
+    <div class="form-group">
+      <label>Pickup Time</label>
+      <input type="time" id="pickup-time" value="09:00">
+    </div>
+    <div class="form-group">
+      <label>Hotel Location</label>
+      <select>
+        <option>Select a hotel branch</option>
+        <option>VeloStay Grand Central</option>
+        <option>VeloStay Riverside</option>
+        <option>VeloStay Uptown Plaza</option>
+        <option>VeloStay Harbor View</option>
+        <option>VeloStay West End</option>
+      </select>
+    </div>
+    <button class="btn-book">Check Availability</button>
+  </div>
+</div>
+
+<!-- BIKES -->
+<section id="bikes">
+  <div class="section-header reveal">
+    <span class="section-tag">Our Fleet</span>
+    <h2>Pick Your Perfect Ride</h2>
+    <p class="section-sub">From smooth city cruisers to performance e-bikes — we've got the right bicycle for every explorer.</p>
+  </div>
+  <div class="bikes-grid">
+
+    <div class="bike-card reveal">
+      <div class="bike-img" style="background-image: url('https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=600&auto=format&fit=crop&q=80');">
+        <div class="bike-badge">Most Popular</div>
+      </div>
+      <div class="bike-body">
+        <div class="bike-features">
+          <span class="feat-tag">City Cruiser</span>
+          <span class="feat-tag">7-Speed</span>
+          <span class="feat-tag">Step-through</span>
+        </div>
+        <div class="bike-name">Urban Classic</div>
+        <p class="bike-desc">Effortless comfort for city sightseeing. Upright posture, smooth gears, and a rear basket included.</p>
+        <div class="bike-meta">
+          <div class="bike-price">$12 <span>/ hour</span></div>
+          <div style="font-size:0.82rem; color:var(--mid);">or $44/day</div>
+        </div>
+        <button class="btn-rent">Reserve Now</button>
+      </div>
+    </div>
+
+    <div class="bike-card reveal" style="transition-delay:0.1s">
+      <div class="bike-img" style="background-image: url('https://images.unsplash.com/photo-1559181567-c3190bc49b57?w=600&auto=format&fit=crop&q=80');">
+        <div class="bike-badge">Premium</div>
+      </div>
+      <div class="bike-body">
+        <div class="bike-features">
+          <span class="feat-tag">Electric</span>
+          <span class="feat-tag">60km Range</span>
+          <span class="feat-tag">Pedal Assist</span>
+        </div>
+        <div class="bike-name">E-Glide Pro</div>
+        <p class="bike-desc">Conquer hills with ease. Our electric bike delivers a smooth, assisted ride for ultimate exploration.</p>
+        <div class="bike-meta">
+          <div class="bike-price">$22 <span>/ hour</span></div>
+          <div style="font-size:0.82rem; color:var(--mid);">or $79/day</div>
+        </div>
+        <button class="btn-rent">Reserve Now</button>
+      </div>
+    </div>
+
+    <div class="bike-card reveal" style="transition-delay:0.2s">
+      <div class="bike-img" style="background-image: url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=600&auto=format&fit=crop&q=80');">
+        <div class="bike-badge">Adventure</div>
+      </div>
+      <div class="bike-body">
+        <div class="bike-features">
+          <span class="feat-tag">Hybrid</span>
+          <span class="feat-tag">21-Speed</span>
+          <span class="feat-tag">Trail-ready</span>
+        </div>
+        <div class="bike-name">Trail Blazer</div>
+        <p class="bike-desc">Venture beyond city streets. Built for parks, trails and waterfront paths with a responsive ride.</p>
+        <div class="bike-meta">
+          <div class="bike-price">$18 <span>/ hour</span></div>
+          <div style="font-size:0.82rem; color:var(--mid);">or $59/day</div>
+        </div>
+        <button class="btn-rent">Reserve Now</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="section-header reveal">
+    <span class="section-tag">Guest Stories</span>
+    <h2>Loved by Riders Worldwide</h2>
+    <p class="section-sub">Thousands of hotel guests have discovered their city differently — and they're sharing the experience.</p>
+  </div>
+  <div class="reviews-grid">
+
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">"Renting from VeloStay was the highlight of our trip. We discovered hidden neighborhoods we never would've found by taxi. The bikes were spotless and the staff incredibly helpful."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar" style="background-image: url('https://i.pravatar.cc/80?img=47');"></div>
+        <div>
+          <div class="reviewer-name">Sophia Laurent</div>
+          <div class="reviewer-hotel">VeloStay Grand Central, Paris</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal" style="transition-delay:0.1s">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">"The e-bike was a game changer. Covered twice the distance with half the effort. Booking was instant, pickup was seamless, and the helmet even had a matching hotel logo — lovely touch."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar" style="background-image: url('https://i.pravatar.cc/80?img=12');"></div>
+        <div>
+          <div class="reviewer-name">Marcus Chen</div>
+          <div class="reviewer-hotel">VeloStay Riverside, Amsterdam</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal" style="transition-delay:0.2s">
+      <div class="stars">★★★★☆</div>
+      <p class="review-text">"A brilliant service. The trail bike handled the coastal path perfectly. I rented for 3 days and the day-rate was completely fair. Will absolutely book again on our next stay."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar" style="background-image: url('https://i.pravatar.cc/80?img=32');"></div>
+        <div>
+          <div class="reviewer-name">Amelia Roberts</div>
+          <div class="reviewer-hotel">VeloStay Harbor View, Lisbon</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BRANCHES -->
+<section class="branches-section" id="branches">
+  <div class="section-header reveal">
+    <span class="section-tag">Our Locations</span>
+    <h2>Find Us at Your Hotel</h2>
+    <p class="section-sub">VeloStay cycling hubs are available at every property in our hotel collection, worldwide.</p>
+  </div>
+  <div class="branches-grid">
+
+    <div class="branch-card reveal">
+      <div class="branch-img" style="background-image: url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&auto=format&fit=crop&q=80');"></div>
+      <div class="branch-body">
+        <div class="branch-name">VeloStay Grand Central</div>
+        <div class="branch-addr">12 Boulevard Haussmann, 9th Arrondissement, Paris</div>
+        <div class="branch-info">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            Daily 07:00 – 21:00
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            City Center
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="branch-card reveal" style="transition-delay:0.1s">
+      <div class="branch-img" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format&fit=crop&q=80');"></div>
+      <div class="branch-body">
+        <div class="branch-name">VeloStay Riverside</div>
+        <div class="branch-addr">3 Keizersgracht, Canal Ring, Amsterdam</div>
+        <div class="branch-info">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            Daily 06:00 – 22:00
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Waterfront
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="branch-card reveal" style="transition-delay:0.2s">
+      <div class="branch-img" style="background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&auto=format&fit=crop&q=80');"></div>
+      <div class="branch-body">
+        <div class="branch-name">VeloStay Harbor View</div>
+        <div class="branch-addr">7 Rua Augusta, Baixa District, Lisbon</div>
+        <div class="branch-info">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            Daily 08:00 – 20:00
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Harborfront
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">Velo<span>Stay</span></div>
+      <p class="footer-tagline">Premium bicycle rentals integrated seamlessly into your hotel experience. Discover every destination on two wheels.</p>
+      <div class="footer-social">
+        <a class="social-btn" href="#" title="Instagram">𝕀</a>
+        <a class="social-btn" href="#" title="Twitter">𝕏</a>
+        <a class="social-btn" href="#" title="Facebook">𝔽</a>
+        <a class="social-btn" href="#" title="TikTok">♪</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul class="footer-links">
+        <li><a href="#">Our Fleet</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Hotel Locations</a></li>
+        <li><a href="#">City Maps</a></li>
+        <li><a href="#">Group Bookings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul class="footer-links">
+        <li><a href="#">About VeloStay</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press & Media</a></li>
+        <li><a href="#">Sustainability</a></li>
+        <li><a href="#">Partners</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul class="footer-links">
+        <li><a href="mailto:hello@velostay.com">hello@velostay.com</a></li>
+        <li><a href="tel:+18005678765">+1 800 VELOSTAY</a></li>
+        <li><a href="#">Live Chat Support</a></li>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Report an Issue</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 VeloStay Hotels & Cycling. All rights reserved.</div>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Settings</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('pickup-date').value = today;
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
